@@ -30,14 +30,14 @@ export default class App extends React.Component {
                 returnKeyType={"done"}
                 autoCorrect={false}
             />
-            <ScrollView>
+            <ScrollView contentContainerStyle={styles.toDos}>
                 <ToDo />
             </ScrollView>
         </View>
       </View>
     );
   }
-  _crontolNewToDo = text => {
+  _crontollNewToDo = text => {
       this.setState({
           newToDo: text
       })
@@ -83,5 +83,8 @@ const styles = StyleSheet.create({
       borderBottomColor: "#bbb",
       borderBottomWidth: 1,
       fontSize: 25
+  },
+  toDos: {
+      alignItems: "center"
   }
 });
