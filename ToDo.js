@@ -1,15 +1,29 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import { View, 
+        Text, 
+        TouchableOpacity, 
+        StyleSheet, 
+        Dimensions,
+        TextInput
+} from "react-native";
+import PropTypes from "prop-types";
 
 const { width, height } = Dimensions.get("window");
 
 class ToDo extends Component {
-    state = {
-      isEditing: false,
-      isCompleted: false
-    };
+    constructor(props) {
+        super(props);
+        this.state = { isEditing: false, toDoValue: props.text };
+    }
+    static propTypes = {
+        text: PropTypes.string.isRequired,
+        isCompleted: PropTypes.bool.isRequired,
+        deleteToDo: PropTypes.func.isRequired,
+        id: PropTypes.string.isRequired
+    }
     render() {
-        const { isCompleted, isEditing } = this.state;
+        const { isCompleted, isEditing, toDoValue } = this.state;
+        const { text, id, deleteToDo } = this.props;
         return (
             <View sttle={styles.container}>
                 <View style={styles.column}>
@@ -20,12 +34,29 @@ class ToDo extends Component {
                     ]} 
                     />
                 </TouchableOpacity>
-                <Text style={[
-                    styles.text,
-                    isCompleted ? styles.completedText : styles.uncompletedText
-                ]}>
-                Hello, I'm a To Do
+                { isEditing ? (
+                <TextInput 
+                    style={[ 
+                        styles.text, 
+                        styles.input,
+                        isCompleted ? styles.completedText : styles.uncompletedText
+                    ]} 
+                    value={toDoValue}
+                    multiline={true}
+                    onChangeText={this._controllInput}
+                    returnKeyType={"done"}
+                    onBlur={this._finishEditing}
+                />
+                ) : (
+                <Text 
+                    style={[
+                        styles.text,
+                        isCompleted ? styles.completedText : styles.uncompletedText
+                    ]}
+                >
+                    {text}
                 </Text>
+                )}
                 </View>
                     {isEditing ? (
                         <View style={styles.actions}>
@@ -42,7 +73,7 @@ class ToDo extends Component {
                                     <Text style={styles.actionText}>E</Text>
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPressOut={() => deleteToDo(id) }>
                                 <View style={styles.actionContainer}>
                                     <Text style={styles.actionText}>X</Text>
                                 </View>
@@ -61,7 +92,7 @@ class ToDo extends Component {
     };
     _startEditing = () => {
         this.setState({
-            isEditing: true  
+            isEditing: true, toDoValue: text 
         });
     };
     _finishEditing = () => {
@@ -69,6 +100,11 @@ class ToDo extends Component {
             isEditing: false
         });
     };
+    _controllInput = {} => {
+        this.setState({
+            toDoValue: text
+        })
+    }
 }
 
 const styles = StyleSheet.create({
@@ -110,7 +146,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         width: width / 2,
-        justifyContent: "space-between"
     },
     actions: {
         flexDirection: "row"
@@ -118,5 +153,10 @@ const styles = StyleSheet.create({
     actionContainer: {
         marginVertical: 10,
         marginHorizontal: 10
+    },
+    input: {
+        marginVertical: 10,
+        width: width / 2,
+        paddingBottom: 5
     }
 })
